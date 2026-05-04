@@ -1,29 +1,17 @@
-package com.example.uamfix
+package com.example.proyecto_fixuam
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.ui.Modifier
-import com.example.uamfix.ui.theme.UAMfixTheme
-import com.example.uamfix.navigation.NavegacionApp
-
-
+import com.example.proyecto_fixuam.navigation.AppNavigation
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
-            UAMfixTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    NavegacionApp()
-                }
-            }
+            AppNavigation()
         }
     }
 }

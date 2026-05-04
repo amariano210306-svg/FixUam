@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.fixuamrepopoo"
+    namespace = "com.example.proyecto_fixuam"
     compileSdk {
         version = release(36) {
             minorApiLevel = 1
@@ -12,7 +12,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.fixuamrepopoo"
+        applicationId = "com.example.proyecto_fixuam"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -55,9 +55,4 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-
-    implementation("androidx.navigation:navigation-compose:2.7.7")
-
-    implementation("androidx.media3:media3-exoplayer:1.3.0")
-    implementation("androidx.media3:media3-ui:1.3.0")
 }

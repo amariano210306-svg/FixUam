@@ -1,58 +1,36 @@
-package com.example.fixuamrepopoo.ui.theme
+package com.example.proyecto_fixuam.ui.theme
 
-import android.app.Activity
-import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.ui.graphics.Color
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+data class ConfiguracionTema(
+    val modoOscuro: Boolean,
+    val cambiarModo: () -> Unit
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
-)
-
-@Composable
-fun FixuamRepopooTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
-    content: @Composable () -> Unit
-) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
-
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
+val LocalConfiguracionTema = compositionLocalOf {
+    ConfiguracionTema(
+        modoOscuro = false,
+        cambiarModo = {}
     )
+}
+
+fun fondoApp(modoOscuro: Boolean): Color {
+    return if (modoOscuro) Color(0xFF071A1C) else Color(0xFFF4FAFB)
+}
+
+fun tarjetaApp(modoOscuro: Boolean): Color {
+    return if (modoOscuro) Color(0xFF102A2D) else Color.White
+}
+
+fun textoApp(modoOscuro: Boolean): Color {
+    return if (modoOscuro) Color.White else Color(0xFF102A43)
+}
+
+fun textoSecundarioApp(modoOscuro: Boolean): Color {
+    return if (modoOscuro) Color(0xFFB8C7C9) else Color(0xFF7A8A99)
+}
+
+fun colorPrincipalApp(): Color {
+    return Color(0xFF32A0A6)
 }
