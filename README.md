@@ -136,7 +136,7 @@ Gestión de usuarios, revisión general de reportes, estadísticas, asignación 
 | Modo claro y modo oscuro | Implementado |
 | Fondo animado | Implementado |
 | Transiciones entre pantallas | Implementado |
-| Panel del administrador | Pendiente |
+| Panel del administrador | Implementado |
 | Gestión real de usuarios | Pendiente |
 | Estadísticas administrativas | Pendiente |
 
