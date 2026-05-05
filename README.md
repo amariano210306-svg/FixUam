@@ -39,10 +39,10 @@ Actualmente, los reportes tecnológicos dentro del aula pueden depender de llama
 | Problema | Consecuencia |
 |---|---|
 | Falta de un canal único de comunicación | Los reportes pueden perderse o duplicarse |
-| Dependencia de llamadas personales | Se vuelve poco organizado |
+| Dependencia de llamadas personales | El proceso se vuelve poco organizado |
 | Poco seguimiento del estado | El docente no sabe si el problema fue atendido |
-| Falta de evidencia visual | El técnico llega sin conocer bien la falla |
-| Ausencia de historial | No se lleva control de incidencias |
+| Falta de evidencia visual | El técnico puede llegar sin conocer bien la falla |
+| Ausencia de historial | No se lleva control claro de incidencias |
 
 FixUAM busca centralizar este proceso en una aplicación sencilla, visual y funcional.
 
@@ -69,36 +69,40 @@ Desarrollar una aplicación móvil que permita reportar, visualizar y gestionar 
 
 ## Roles del sistema
 
-La aplicación contempla tres roles principales:
+La aplicación contempla tres roles dentro de su propuesta general. En la versión actual se encuentran implementados los flujos de **Docente** y **Colaborador**. El rol de **Administrador** se mantiene como una funcionalidad planificada para futuras versiones.
 
 <table>
 <tr>
 <th>Rol</th>
+<th>Estado</th>
 <th>Descripción</th>
 <th>Acciones principales</th>
 </tr>
 
 <tr>
 <td><strong>Docente</strong></td>
+<td>Implementado</td>
 <td>Usuario que reporta fallas tecnológicas dentro del aula.</td>
 <td>
-Crear reportes, agregar aula, descripción, foto, consultar estado y cancelar reportes.
+Crear reportes, agregar aula, descripción, evidencia fotográfica, consultar estado y cancelar reportes.
 </td>
 </tr>
 
 <tr>
 <td><strong>Colaborador</strong></td>
+<td>Implementado</td>
 <td>Personal técnico encargado de atender las incidencias reportadas.</td>
 <td>
-Ver reportes pendientes, tomar reportes, marcar reportes como solucionados.
+Ver reportes pendientes, tomar reportes, cambiar estado a en proceso y marcar reportes como solucionados.
 </td>
 </tr>
 
 <tr>
 <td><strong>Administrador</strong></td>
-<td>Rol contemplado para futuras funciones de gestión.</td>
+<td>Planificado</td>
+<td>Rol pensado para una futura versión administrativa del sistema.</td>
 <td>
-Gestión de usuarios, estadísticas, reportes generales y control del sistema.
+Gestión de usuarios, revisión general de reportes, estadísticas, asignación de colaboradores y control administrativo.
 </td>
 </tr>
 </table>
@@ -132,6 +136,9 @@ Gestión de usuarios, estadísticas, reportes generales y control del sistema.
 | Modo claro y modo oscuro | Implementado |
 | Fondo animado | Implementado |
 | Transiciones entre pantallas | Implementado |
+| Panel del administrador | Pendiente |
+| Gestión real de usuarios | Pendiente |
+| Estadísticas administrativas | Pendiente |
 
 ---
 
@@ -171,6 +178,7 @@ La aplicación utiliza un diseño moderno, limpio y consistente.
 ```mermaid
 flowchart TD
     A[Inicio de la aplicación] --> B[Selección de rol]
+
     B --> C[Docente]
     B --> D[Colaborador]
     B --> E[Administrador]
@@ -181,4 +189,8 @@ flowchart TD
 
     F --> I[Panel Docente]
     G --> J[Panel Colaborador]
-    H --> J
+    H --> K[Panel Administrador pendiente]
+
+    I --> L[Crear y consultar reportes]
+    J --> M[Tomar y solucionar reportes]
+    K --> N[Funcionalidades planificadas]
