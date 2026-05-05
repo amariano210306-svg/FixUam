@@ -1,16 +1,50 @@
-# FixUAM - Sistema Móvil de Reportes Tecnológicos
+<div align="center">
 
-FixUAM es una aplicación móvil desarrollada en Android Studio con Kotlin y Jetpack Compose. Su objetivo principal es permitir que los docentes de la UAM reporten de manera rápida y organizada problemas tecnológicos dentro del aula, como fallas en computadoras, proyectores, pantallas interactivas, cables HDMI, conexión a internet o accesorios.
+# FixUAM
 
-La aplicación busca mejorar la comunicación entre los docentes y la Dirección Tecnológica, evitando el uso de llamadas personales o mensajes informales. De esta manera, los reportes se registran dentro de la app y pueden ser atendidos por el personal técnico según el orden de llegada.
+### Sistema móvil para reportar incidencias tecnológicas en aulas universitarias
+
+FixUAM es una aplicación móvil desarrollada en **Kotlin** con **Jetpack Compose**, pensada para que docentes puedan reportar fallas tecnológicas dentro del aula y el personal de soporte pueda atenderlas de forma rápida, organizada y eficiente.
+
+<br>
+
+![Kotlin](https://img.shields.io/badge/Kotlin-Android-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white)
+![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-UI-4285F4?style=for-the-badge&logo=jetpackcompose&logoColor=white)
+![Android Studio](https://img.shields.io/badge/Android%20Studio-IDE-3DDC84?style=for-the-badge&logo=androidstudio&logoColor=white)
+![Material 3](https://img.shields.io/badge/Material%203-Design-32A0A6?style=for-the-badge)
+![Estado](https://img.shields.io/badge/Estado-En%20desarrollo-FFA726?style=for-the-badge)
+
+<br>
+
+**Color principal del proyecto:** `#32A0A6`
+
+</div>
 
 ---
 
-## Descripción del proyecto
+## Vista general del proyecto
 
-En muchas ocasiones, cuando ocurre una falla tecnológica dentro del aula, el docente debe buscar a una persona de soporte, llamar a un número personal o esperar a que alguien esté disponible. Esto puede retrasar la clase y afectar el desarrollo normal de las actividades académicas.
+**FixUAM** nace como una solución para mejorar la comunicación entre los docentes de la UAM y la Dirección Tecnológica.
 
-FixUAM propone una solución digital donde el docente puede ingresar a la aplicación, seleccionar el tipo de problema, indicar el aula donde ocurre la falla, describir la incidencia y adjuntar una foto como evidencia. Posteriormente, el reporte aparece en el panel del colaborador técnico, quien puede tomar el caso, atenderlo y marcarlo como solucionado.
+En muchas ocasiones, cuando ocurre una falla tecnológica en el aula, el docente debe llamar, escribir a alguien de soporte o buscar ayuda de manera informal. Esto puede provocar retrasos, desorden en la atención y pérdida de tiempo durante la clase.
+
+Con FixUAM, el docente puede reportar el problema directamente desde la aplicación, indicando el aula, el tipo de falla, una descripción y una foto como evidencia. El reporte aparece en el panel del colaborador técnico, quien puede tomarlo, atenderlo y marcarlo como solucionado.
+
+---
+
+## Problema que resuelve
+
+Actualmente, los reportes tecnológicos dentro del aula pueden depender de llamadas personales, mensajes informales o avisos verbales. Esto puede generar:
+
+| Problema | Consecuencia |
+|---|---|
+| Falta de un canal único de comunicación | Los reportes pueden perderse o duplicarse |
+| Dependencia de llamadas personales | Se vuelve poco organizado |
+| Poco seguimiento del estado | El docente no sabe si el problema fue atendido |
+| Falta de evidencia visual | El técnico llega sin conocer bien la falla |
+| Ausencia de historial | No se lleva control de incidencias |
+
+FixUAM busca centralizar este proceso en una aplicación sencilla, visual y funcional.
 
 ---
 
@@ -23,117 +57,128 @@ Desarrollar una aplicación móvil que permita reportar, visualizar y gestionar 
 ## Objetivos específicos
 
 - Permitir que los docentes reporten fallas tecnológicas desde una aplicación móvil.
-- Registrar información básica del problema, como tipo de incidencia, aula, descripción y evidencia fotográfica.
-- Mostrar los reportes enviados en un panel para colaboradores técnicos.
-- Permitir que el colaborador tome un reporte y cambie su estado.
-- Reflejar el estado del reporte en la vista del docente.
-- Implementar una interfaz moderna, clara y fácil de utilizar.
-- Aplicar principios básicos de programación orientada a objetos mediante modelos de datos.
+- Registrar el tipo de problema, aula, descripción y evidencia fotográfica.
+- Permitir que el colaborador técnico visualice reportes pendientes.
+- Facilitar que el colaborador tome y resuelva reportes.
+- Actualizar el estado del reporte para que el docente pueda consultarlo.
+- Implementar una interfaz moderna con modo claro y modo oscuro.
+- Aplicar conceptos de Programación Orientada a Objetos en la estructura del proyecto.
+- Organizar el código en paquetes según responsabilidad.
 
 ---
 
-## Roles de usuario
+## Roles del sistema
 
-La aplicación contempla tres tipos de usuarios:
+La aplicación contempla tres roles principales:
 
-### Docente
+<table>
+<tr>
+<th>Rol</th>
+<th>Descripción</th>
+<th>Acciones principales</th>
+</tr>
 
-El docente puede:
+<tr>
+<td><strong>Docente</strong></td>
+<td>Usuario que reporta fallas tecnológicas dentro del aula.</td>
+<td>
+Crear reportes, agregar aula, descripción, foto, consultar estado y cancelar reportes.
+</td>
+</tr>
 
-- Iniciar sesión con correo y contraseña.
-- Crear un nuevo reporte tecnológico.
-- Seleccionar el tipo de problema.
-- Escribir el salón o aula donde ocurre la falla.
-- Describir el problema.
-- Adjuntar o tomar una foto del problema.
-- Consultar sus reportes enviados.
-- Ver si el reporte está pendiente, en proceso o resuelto.
-- Cancelar un reporte si aún no ha sido solucionado.
-- Cerrar sesión.
+<tr>
+<td><strong>Colaborador</strong></td>
+<td>Personal técnico encargado de atender las incidencias reportadas.</td>
+<td>
+Ver reportes pendientes, tomar reportes, marcar reportes como solucionados.
+</td>
+</tr>
 
-### Colaborador técnico
-
-El colaborador técnico puede:
-
-- Iniciar sesión con correo y contraseña.
-- Ver los reportes pendientes enviados por docentes.
-- Tomar un reporte para atenderlo.
-- Ver los reportes asignados en la sección de tareas.
-- Marcar un reporte como solucionado.
-- Cerrar sesión.
-
-### Administrador
-
-El rol de administrador está contemplado dentro del diseño general de la aplicación. En esta versión inicial, el acceso de administrador puede reutilizar el panel del colaborador, pero se deja preparado para futuras mejoras como gestión de usuarios, reportes generales o estadísticas.
+<tr>
+<td><strong>Administrador</strong></td>
+<td>Rol contemplado para futuras funciones de gestión.</td>
+<td>
+Gestión de usuarios, estadísticas, reportes generales y control del sistema.
+</td>
+</tr>
+</table>
 
 ---
 
-## Funcionalidades principales
+## Funcionalidades implementadas
 
-- Pantalla de selección de rol.
-- Pantalla de ingreso con correo y contraseña.
-- Panel principal para docentes.
-- Formulario para crear reportes.
-- Selección del tipo de problema tecnológico.
-- Registro del aula donde ocurre la incidencia.
-- Descripción detallada del problema.
-- Adjuntar imagen desde galería.
-- Tomar foto directamente desde la cámara.
-- Vista previa del detalle del reporte antes de enviarlo.
-- Confirmación de reporte enviado.
-- Historial de reportes del docente.
-- Detalle del estado del reporte.
-- Panel de colaborador técnico.
-- Toma de reportes pendientes.
-- Cambio de estado de reportes.
-- Cancelación de reportes.
-- Cierre de sesión.
+| Funcionalidad | Estado |
+|---|---|
+| Selección de rol | Implementado |
+| Pantalla de credenciales | Implementado |
+| Login simulado con correo y contraseña | Implementado |
+| Panel principal del docente | Implementado |
+| Creación de reportes | Implementado |
+| Selección del tipo de problema | Implementado |
+| Registro del salón o aula | Implementado |
+| Descripción del problema | Implementado |
+| Adjuntar imagen desde galería | Implementado |
+| Tomar foto desde la cámara | Implementado |
+| Vista previa antes de enviar el reporte | Implementado |
+| Confirmación del reporte enviado | Implementado |
+| Historial de reportes del docente | Implementado |
+| Detalle del estado del reporte | Implementado |
+| Cancelación de reportes | Implementado |
+| Panel del colaborador | Implementado |
+| Tomar reporte pendiente | Implementado |
+| Marcar reporte como solucionado | Implementado |
+| Cambio de estado visible para el docente | Implementado |
+| Cerrar sesión | Implementado |
+| Modo claro y modo oscuro | Implementado |
+| Fondo animado | Implementado |
+| Transiciones entre pantallas | Implementado |
+
+---
+
+## Diseño visual
+
+La aplicación utiliza un diseño moderno, limpio y consistente.
+
+### Paleta principal
+
+| Elemento | Color |
+|---|---|
+| Color principal | `#32A0A6` |
+| Fondo claro | `#F4FAFB` |
+| Texto principal | `#102A43` |
+| Texto secundario | `#7A8A99` |
+| Estado pendiente | Rojo |
+| Estado en proceso | Naranja |
+| Estado resuelto | Verde / turquesa |
+
+---
+
+## Características de interfaz
+
+- Diseño basado en tarjetas redondeadas.
+- Botones principales con el color `#32A0A6`.
+- Fondo animado en pantallas de ingreso.
 - Modo claro y modo oscuro.
-- Fondo animado en la pantalla inicial.
-- Transiciones entre pantallas.
+- Transiciones suaves entre pantallas.
+- Interfaz coherente para docente y colaborador.
+- Formularios simples y fáciles de usar.
+- Vista previa del reporte antes de enviarlo.
 
 ---
 
-## Tecnologías utilizadas
+## Flujo general de la aplicación
 
-- Kotlin
-- Android Studio
-- Jetpack Compose
-- Material 3
-- Programación Orientada a Objetos
-- Git y GitHub
+```mermaid
+flowchart TD
+    A[Inicio de la aplicación] --> B[Selección de rol]
+    B --> C[Docente]
+    B --> D[Colaborador]
+    B --> E[Administrador]
 
----
+    C --> F[Ingreso de credenciales]
+    D --> G[Ingreso de credenciales]
+    E --> H[Ingreso de credenciales]
 
-## Arquitectura general del proyecto
-
-El proyecto está organizado en paquetes para separar responsabilidades y facilitar el mantenimiento del código.
-
-```plaintext
-com.example.proyecto_fixuam
-│
-├── model
-│   └── Reporte.kt
-│
-├── navigation
-│   └── AppNavigation.kt
-│
-├── screens
-│   ├── ColaboradorScreen.kt
-│   ├── Componentes.kt
-│   ├── ConfirmacionScreen.kt
-│   ├── CredencialesScreen.kt
-│   ├── DetalleEstadoScreen.kt
-│   ├── DetalleReporteScreen.kt
-│   ├── InicioDocenteScreen.kt
-│   ├── LoginScreen.kt
-│   ├── MisReportesScreen.kt
-│   ├── NuevoReporteScreen.kt
-│   └── PerfilDocenteScreen.kt
-│
-├── ui.theme
-│   ├── Color.kt
-│   ├── Theme.kt
-│   └── Type.kt
-│
-└── MainActivity.kt
+    F --> I[Panel Docente]
+    G --> J[Panel Colaborador]
+    H --> J
