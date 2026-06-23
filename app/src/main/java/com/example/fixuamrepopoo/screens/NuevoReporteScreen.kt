@@ -6,7 +6,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -15,22 +21,27 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-import com.example.fixuamrepopoo.screens.Reporte
-
 import com.example.fixuamrepopoo.ui.theme.ColorGrisTexto
 import com.example.fixuamrepopoo.ui.theme.ColorPrincipal
 import com.example.fixuamrepopoo.ui.theme.ColorRojo
 import com.example.fixuamrepopoo.ui.theme.ColorTexto
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
 @Composable
 fun NuevoReporteScreen(
     volver: () -> Unit,
@@ -49,6 +60,7 @@ fun NuevoReporteScreen(
         if (uri != null) {
             fotoUri = uri.toString()
             fotoBitmap = null
+            error = ""
         }
     }
 
@@ -58,6 +70,7 @@ fun NuevoReporteScreen(
         if (bitmap != null) {
             fotoBitmap = bitmap
             fotoUri = ""
+            error = ""
         }
     }
 
@@ -99,7 +112,7 @@ fun NuevoReporteScreen(
             )
 
             Text(
-                text = "Selecciona el tipo de problema",
+                text = "Seleccioná el tipo de problema encontrado en el aula",
                 color = ColorGrisTexto
             )
 
@@ -111,6 +124,7 @@ fun NuevoReporteScreen(
                     seleccionado = tipo == tipoSeleccionado,
                     onClick = {
                         tipoSeleccionado = tipo
+                        error = ""
                     }
                 )
 
@@ -123,6 +137,7 @@ fun NuevoReporteScreen(
                 value = aula,
                 onValueChange = {
                     aula = it
+                    error = ""
                 },
                 modifier = Modifier.fillMaxWidth(),
                 label = {
@@ -131,6 +146,7 @@ fun NuevoReporteScreen(
                 placeholder = {
                     Text("Ej: A201, B105, C302")
                 },
+                singleLine = true,
                 shape = RoundedCornerShape(18.dp)
             )
 
@@ -140,6 +156,7 @@ fun NuevoReporteScreen(
                 value = descripcion,
                 onValueChange = {
                     descripcion = it
+                    error = ""
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -148,7 +165,7 @@ fun NuevoReporteScreen(
                     Text("Describe el problema")
                 },
                 placeholder = {
-                    Text("Ej: No hay conexión a internet en el aula.")
+                    Text("Ej: El proyector no enciende.")
                 },
                 shape = RoundedCornerShape(18.dp)
             )
@@ -227,18 +244,29 @@ fun NuevoReporteScreen(
             BotonPrincipal(
                 texto = "Continuar",
                 onClick = {
-                    if (aula.isBlank() || descripcion.isBlank()) {
-                        error = "Completá el aula y la descripción del problema"
-                    } else {
+                    error = when {
+                        aula.isBlank() -> "Ingresá el salón o aula donde está la falla"
+                        descripcion.isBlank() -> "Describí el problema encontrado"
+                        descripcion.length < 8 -> "La descripción debe ser un poco más clara"
+                        else -> ""
+                    }
+
+                    if (error.isEmpty()) {
+                        val fechaActual = SimpleDateFormat(
+                            "dd/MM/yyyy HH:mm",
+                            Locale.getDefault()
+                        ).format(Date())
+
                         val nuevoReporte = Reporte(
-                            id = (100..999).random(),
-                            docente = "Juan Pérez",
+                            id = (System.currentTimeMillis() % 1000000).toInt(),
                             tipo = tipoSeleccionado,
-                            aula = aula,
-                            descripcion = descripcion,
-                            fecha = "01/05/2026 21:51",
+                            aula = aula.trim(),
+                            descripcion = descripcion.trim(),
+                            fecha = fechaActual,
                             prioridad = "Media",
                             estado = "Pendiente",
+                            atendidoPor = "",
+                            atendidoPorUid = "",
                             fotoUri = fotoUri,
                             fotoBitmap = fotoBitmap
                         )

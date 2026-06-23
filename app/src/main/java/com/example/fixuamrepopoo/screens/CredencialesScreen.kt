@@ -22,22 +22,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
 import com.example.fixuamrepopoo.ui.theme.ColorPrincipal
 import com.example.fixuamrepopoo.ui.theme.ColorRojo
 import com.example.fixuamrepopoo.ui.theme.LocalConfiguracionTema
 import com.example.fixuamrepopoo.ui.theme.tarjetaApp
-import com.example.fixuamrepopoo.ui.theme.textoApp
 import com.example.fixuamrepopoo.ui.theme.textoSecundarioApp
+
 @Composable
 fun CredencialesScreen(
     rol: String,
     volver: () -> Unit,
-    ingresar: () -> Unit
+    ingresar: (String, String, (String) -> Unit) -> Unit,
+    crearCuenta: () -> Unit
 ) {
     var correo by remember { mutableStateOf("") }
     var contrasena by remember { mutableStateOf("") }
     var error by remember { mutableStateOf("") }
+    var cargando by remember { mutableStateOf(false) }
 
     val config = LocalConfiguracionTema.current
 
@@ -65,7 +66,9 @@ fun CredencialesScreen(
                     modifier = Modifier
                         .align(Alignment.Start)
                         .clickable {
-                            volver()
+                            if (!cargando) {
+                                volver()
+                            }
                         }
                 )
 
@@ -89,6 +92,7 @@ fun CredencialesScreen(
                     value = correo,
                     onValueChange = {
                         correo = it
+                        error = ""
                     },
                     modifier = Modifier.fillMaxWidth(),
                     label = {
@@ -98,6 +102,7 @@ fun CredencialesScreen(
                         Text("usuario@uam.edu.ni")
                     },
                     singleLine = true,
+                    enabled = !cargando,
                     shape = RoundedCornerShape(18.dp)
                 )
 
@@ -107,12 +112,14 @@ fun CredencialesScreen(
                     value = contrasena,
                     onValueChange = {
                         contrasena = it
+                        error = ""
                     },
                     modifier = Modifier.fillMaxWidth(),
                     label = {
                         Text("Contraseña")
                     },
                     singleLine = true,
+                    enabled = !cargando,
                     visualTransformation = PasswordVisualTransformation(),
                     shape = RoundedCornerShape(18.dp)
                 )
@@ -127,15 +134,41 @@ fun CredencialesScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(28.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
                 BotonPrincipal(
-                    texto = "Ingresar",
+                    texto = if (cargando) "Ingresando..." else "Ingresar",
                     onClick = {
-                        if (correo.isBlank() || contrasena.isBlank()) {
-                            error = "Ingresá tu correo y contraseña"
-                        } else {
-                            ingresar()
+                        if (!cargando) {
+                            error = when {
+                                correo.isBlank() -> "Ingresá tu correo"
+                                !correo.contains("@") -> "Ingresá un correo válido"
+                                contrasena.isBlank() -> "Ingresá tu contraseña"
+                                else -> ""
+                            }
+
+                            if (error.isEmpty()) {
+                                cargando = true
+
+                                ingresar(
+                                    correo.trim(),
+                                    contrasena
+                                ) { mensajeError ->
+                                    error = mensajeError
+                                    cargando = false
+                                }
+                            }
+                        }
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                BotonOscuro(
+                    texto = "Crear cuenta",
+                    onClick = {
+                        if (!cargando) {
+                            crearCuenta()
                         }
                     }
                 )

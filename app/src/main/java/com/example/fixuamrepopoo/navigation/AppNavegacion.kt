@@ -23,6 +23,7 @@ fun AppNavigation() {
     var modoOscuro by remember { mutableStateOf(false) }
 
     var usuarioActual by remember { mutableStateOf("") }
+    var usuarioActualUid by remember { mutableStateOf("") }
 
     val reportes = remember {
         mutableStateListOf<Reporte>()
@@ -34,6 +35,49 @@ fun AppNavigation() {
 
     var reporteSeleccionadoId by remember {
         mutableStateOf<Int?>(null)
+    }
+
+    fun irPantallaPrincipalPorRol(rol: String) {
+        pantallaActual = when (rol) {
+            "docente" -> "inicio_docente"
+            "colaborador" -> "colaborador"
+            "admin" -> "dashboard"
+            else -> "login"
+        }
+    }
+
+    fun cerrarSesionCompleta() {
+        FirebaseServicio.cerrarSesion()
+
+        usuarioActual = ""
+        usuarioActualUid = ""
+        rolSeleccionado = ""
+        reporteTemporal = null
+        reporteSeleccionadoId = null
+        reportes.clear()
+        pantallaActual = "login"
+    }
+
+    DisposableEffect(usuarioActualUid, rolSeleccionado) {
+        if (usuarioActualUid.isBlank() || rolSeleccionado.isBlank()) {
+            onDispose { }
+        } else {
+            val listener = FirebaseServicio.escucharReportes(
+                rol = rolSeleccionado,
+                usuarioUid = usuarioActualUid,
+                onSuccess = { listaReportes ->
+                    reportes.clear()
+                    reportes.addAll(listaReportes)
+                },
+                onError = { mensaje ->
+                    println("Error al escuchar reportes: $mensaje")
+                }
+            )
+
+            onDispose {
+                listener.remove()
+            }
+        }
     }
 
     CompositionLocalProvider(
@@ -76,14 +120,47 @@ fun AppNavigation() {
                     volver = {
                         pantallaActual = "login"
                     },
-                    ingresar = {
-                        usuarioActual = when (rolSeleccionado) {
-                            "docente" -> "Juan Pérez"
-                            "colaborador" -> "Carlos López"
-                            "admin" -> "Luis Carlos"
-                            else -> "Usuario"
-                        }
-                        pantallaActual = "dashboard"
+                    ingresar = { correo: String, contrasena: String, mostrarError: (String) -> Unit ->
+                        FirebaseServicio.iniciarSesion(
+                            correo = correo,
+                            contrasena = contrasena,
+                            rolSeleccionado = rolSeleccionado,
+                            onSuccess = { usuario: Usuario ->
+                                usuarioActual = usuario.nombre
+                                usuarioActualUid = usuario.uid
+                                rolSeleccionado = usuario.rol
+
+                                irPantallaPrincipalPorRol(usuario.rol)
+                            },
+                            onError = { mensaje: String ->
+                                mostrarError(mensaje)
+                            }
+                        )
+                    },
+                    crearCuenta = {
+                        pantallaActual = "registro"
+                    }
+                )
+
+                "registro" -> RegistroScreen(
+                    rol = rolSeleccionado,
+                    volver = {
+                        pantallaActual = "credenciales"
+                    },
+                    registrarUsuario = { nuevoUsuario: Usuario, mostrarError: (String) -> Unit ->
+                        FirebaseServicio.registrarUsuario(
+                            usuario = nuevoUsuario,
+                            onSuccess = { usuarioRegistrado: Usuario ->
+                                usuarioActual = usuarioRegistrado.nombre
+                                usuarioActualUid = usuarioRegistrado.uid
+                                rolSeleccionado = usuarioRegistrado.rol
+
+                                irPantallaPrincipalPorRol(usuarioRegistrado.rol)
+                            },
+                            onError = { mensaje: String ->
+                                mostrarError(mensaje)
+                            }
+                        )
                     }
                 )
 
@@ -92,16 +169,22 @@ fun AppNavigation() {
                     reportes = reportes,
                     usuarioNombre = usuarioActual,
                     onCerrarSesion = {
-                        usuarioActual = ""
-                        rolSeleccionado = ""
-                        pantallaActual = "login"
+                        cerrarSesionCompleta()
                     },
                     onNavigateToInicio = {
-                        pantallaActual = when (rolSeleccionado) {
-                            "docente" -> "inicio_docente"
-                            "colaborador" -> "colaborador"
-                            "admin" -> "admin_panel"
-                            else -> "login"
+                        pantallaActual = "dashboard"
+                    },
+                    eliminarReporte = { id ->
+                        val reporte = reportes.find { it.id == id }
+
+                        if (reporte != null) {
+                            FirebaseServicio.eliminarReporte(
+                                firestoreId = reporte.firestoreId,
+                                onSuccess = {},
+                                onError = { mensaje ->
+                                    println("Error al eliminar reporte: $mensaje")
+                                }
+                            )
                         }
                     }
                 )
@@ -123,7 +206,14 @@ fun AppNavigation() {
                         pantallaActual = "inicio_docente"
                     },
                     continuar = { reporte ->
-                        reporteTemporal = reporte
+                        reporteTemporal = reporte.copy(
+                            docente = usuarioActual,
+                            docenteUid = usuarioActualUid,
+                            estado = "Pendiente",
+                            atendidoPor = "",
+                            atendidoPorUid = ""
+                        )
+
                         pantallaActual = "detalle_reporte"
                     }
                 )
@@ -135,11 +225,17 @@ fun AppNavigation() {
                     },
                     enviarReporte = {
                         reporteTemporal?.let { reporte ->
-                            reportes.add(reporte)
+                            FirebaseServicio.guardarReporte(
+                                reporte = reporte,
+                                onSuccess = {
+                                    reporteTemporal = null
+                                    pantallaActual = "confirmacion"
+                                },
+                                onError = { mensaje ->
+                                    println("Error al guardar reporte: $mensaje")
+                                }
+                            )
                         }
-
-                        reporteTemporal = null
-                        pantallaActual = "confirmacion"
                     }
                 )
 
@@ -153,7 +249,7 @@ fun AppNavigation() {
                 )
 
                 "mis_reportes" -> MisReportesScreen(
-                    reportes = reportes.filter { it.docente == usuarioActual },
+                    reportes = reportes.filter { it.docenteUid == usuarioActualUid },
                     volver = {
                         pantallaActual = "inicio_docente"
                     },
@@ -172,10 +268,18 @@ fun AppNavigation() {
                         val reporte = reportes.find { it.id == id }
 
                         if (reporte != null) {
-                            reportes.remove(reporte)
+                            FirebaseServicio.eliminarReporte(
+                                firestoreId = reporte.firestoreId,
+                                onSuccess = {
+                                    pantallaActual = "mis_reportes"
+                                },
+                                onError = { mensaje ->
+                                    println("Error al cancelar reporte: $mensaje")
+                                }
+                            )
+                        } else {
+                            pantallaActual = "mis_reportes"
                         }
-
-                        pantallaActual = "mis_reportes"
                     }
                 )
 
@@ -184,56 +288,44 @@ fun AppNavigation() {
                         pantallaActual = "inicio_docente"
                     },
                     cerrarSesion = {
-                        usuarioActual = ""
-                        rolSeleccionado = ""
-                        pantallaActual = "login"
+                        cerrarSesionCompleta()
                     }
                 )
 
                 "colaborador" -> ColaboradorScreen(
                     reportes = reportes,
+                    colaboradorNombre = usuarioActual.ifBlank { "Soporte UAM" },
+                    colaboradorUid = usuarioActualUid,
                     tomarReporte = { id ->
-                        val index = reportes.indexOfFirst { it.id == id }
+                        val reporte = reportes.find { it.id == id }
 
-                        if (index != -1) {
-                            val reporteActual = reportes[index]
-
-                            reportes[index] = reporteActual.copy(
-                                estado = "En proceso",
-                                atendidoPor = "Soporte UAM"
+                        if (reporte != null) {
+                            FirebaseServicio.tomarReporte(
+                                firestoreId = reporte.firestoreId,
+                                colaboradorUid = usuarioActualUid,
+                                colaboradorNombre = usuarioActual.ifBlank { "Soporte UAM" },
+                                onSuccess = {},
+                                onError = { mensaje ->
+                                    println("Error al tomar reporte: $mensaje")
+                                }
                             )
                         }
                     },
                     resolverReporte = { id ->
-                        val index = reportes.indexOfFirst { it.id == id }
+                        val reporte = reportes.find { it.id == id }
 
-                        if (index != -1) {
-                            val reporteActual = reportes[index]
-
-                            reportes[index] = reporteActual.copy(
-                                estado = "Resuelto"
+                        if (reporte != null) {
+                            FirebaseServicio.resolverReporte(
+                                firestoreId = reporte.firestoreId,
+                                onSuccess = {},
+                                onError = { mensaje ->
+                                    println("Error al resolver reporte: $mensaje")
+                                }
                             )
                         }
                     },
                     cerrarSesion = {
-                        usuarioActual = ""
-                        rolSeleccionado = ""
-                        pantallaActual = "login"
-                    }
-                )
-
-                "admin_panel" -> AdministradorScreen(
-                    reportes = reportes,
-                    eliminarReporte = { id ->
-                        val reporte = reportes.find { it.id == id }
-                        if (reporte != null) {
-                            reportes.remove(reporte)
-                        }
-                    },
-                    cerrarSesion = {
-                        usuarioActual = ""
-                        rolSeleccionado = ""
-                        pantallaActual = "login"
+                        cerrarSesionCompleta()
                     }
                 )
             }

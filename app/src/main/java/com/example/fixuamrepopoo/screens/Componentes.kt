@@ -7,7 +7,19 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -18,21 +30,21 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-
 import com.example.fixuamrepopoo.ui.theme.LocalConfiguracionTema
 import com.example.fixuamrepopoo.ui.theme.colorPrincipalApp
 import com.example.fixuamrepopoo.ui.theme.fondoApp
 import com.example.fixuamrepopoo.ui.theme.tarjetaApp
 import com.example.fixuamrepopoo.ui.theme.textoApp
 import com.example.fixuamrepopoo.ui.theme.textoSecundarioApp
+
 @Composable
 fun FondoPrincipal(
     content: @Composable BoxScope.() -> Unit
@@ -75,11 +87,11 @@ fun FondoDegradadoAnimado(
             .background(
                 Brush.linearGradient(
                     colors = listOf(color1, color2, color3),
-                    start = androidx.compose.ui.geometry.Offset(
+                    start = Offset(
                         x = movimiento * 900f,
                         y = 0f
                     ),
-                    end = androidx.compose.ui.geometry.Offset(
+                    end = Offset(
                         x = 0f,
                         y = movimiento * 1200f
                     )
@@ -190,7 +202,9 @@ fun OpcionMenu(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() },
+            .clickable {
+                onClick()
+            },
         shape = RoundedCornerShape(22.dp),
         colors = CardDefaults.cardColors(
             containerColor = tarjetaApp(config.modoOscuro)
@@ -206,7 +220,10 @@ fun OpcionMenu(
             Box(
                 modifier = Modifier
                     .size(50.dp)
-                    .background(colorPrincipalApp().copy(alpha = 0.15f), CircleShape),
+                    .background(
+                        colorPrincipalApp().copy(alpha = 0.15f),
+                        CircleShape
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Text(

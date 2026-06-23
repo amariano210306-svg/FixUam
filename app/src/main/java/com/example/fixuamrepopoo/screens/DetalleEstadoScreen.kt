@@ -7,21 +7,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-import com.example.fixuamrepopoo.screens.Reporte
-import com.example.fixuamrepopoo.screens.BotonOscuro
-import com.example.fixuamrepopoo.screens.FondoPrincipal
-import com.example.fixuamrepopoo.screens.TarjetaBlanca
-
 import com.example.fixuamrepopoo.ui.theme.ColorGrisTexto
 import com.example.fixuamrepopoo.ui.theme.ColorNaranja
 import com.example.fixuamrepopoo.ui.theme.ColorPrincipal
+import com.example.fixuamrepopoo.ui.theme.ColorRojo
 import com.example.fixuamrepopoo.ui.theme.ColorTexto
 
 @Composable
@@ -35,6 +32,7 @@ fun DetalleEstadoScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(22.dp)
+                .verticalScroll(rememberScrollState())
         ) {
             Spacer(modifier = Modifier.height(26.dp))
 
@@ -72,22 +70,49 @@ fun DetalleEstadoScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
+                        text = "RPT-${reporte.id}",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = ColorPrincipal
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
                         text = reporte.tipo,
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
                         color = ColorTexto
                     )
 
+                    Spacer(modifier = Modifier.height(8.dp))
+
                     Text(
                         text = "Aula: ${reporte.aula}",
                         color = ColorGrisTexto
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = "Docente: ${reporte.docente}",
+                        color = ColorGrisTexto
+                    )
+
+                    Spacer(modifier = Modifier.height(14.dp))
 
                     Text(
-                        text = "Estado: ${reporte.estado}",
-                        color = if (reporte.estado == "Resuelto") ColorPrincipal else ColorNaranja,
+                        text = "Estado",
+                        fontWeight = FontWeight.Bold,
+                        color = ColorTexto
+                    )
+
+                    Text(
+                        text = reporte.estado,
+                        color = when (reporte.estado) {
+                            "Pendiente" -> ColorRojo
+                            "En proceso" -> ColorNaranja
+                            "Resuelto" -> ColorPrincipal
+                            else -> ColorGrisTexto
+                        },
                         fontWeight = FontWeight.Bold
                     )
 
@@ -141,32 +166,51 @@ fun DetalleEstadoScreen(
 
                         Text(
                             text = reporte.atendidoPor,
-                            color = ColorPrincipal
+                            color = ColorPrincipal,
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }
 
                 Spacer(modifier = Modifier.height(22.dp))
 
-                if (reporte.estado != "Resuelto") {
-                    BotonOscuro(
-                        texto = "Cancelar reporte",
-                        onClick = {
-                            cancelarReporte(reporte.id)
-                        }
-                    )
-                } else {
-                    TarjetaBlanca(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "Este reporte ya fue solucionado por soporte técnico.",
-                            color = ColorPrincipal,
-                            fontWeight = FontWeight.Bold
+                when (reporte.estado) {
+                    "Pendiente" -> {
+                        BotonOscuro(
+                            texto = "Cancelar reporte",
+                            onClick = {
+                                cancelarReporte(reporte.id)
+                            }
                         )
+                    }
+
+                    "En proceso" -> {
+                        TarjetaBlanca(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "Este reporte ya fue tomado por soporte técnico y se encuentra en proceso.",
+                                color = ColorNaranja,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+
+                    "Resuelto" -> {
+                        TarjetaBlanca(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "Este reporte ya fue solucionado por soporte técnico.",
+                                color = ColorPrincipal,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.height(30.dp))
         }
     }
 }

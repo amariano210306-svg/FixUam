@@ -2,45 +2,64 @@ package com.example.fixuamrepopoo.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-import com.example.fixuamrepopoo.screens.Reporte
-import com.example.fixuamrepopoo.screens.BotonOscuro
-import com.example.fixuamrepopoo.ui.theme.ColorFondo
 import com.example.fixuamrepopoo.ui.theme.ColorGrisTexto
 import com.example.fixuamrepopoo.ui.theme.ColorPrincipal
 import com.example.fixuamrepopoo.ui.theme.ColorTexto
-import com.example.fixuamrepopoo.screens.FondoPrincipal
-import com.example.fixuamrepopoo.screens.TarjetaBlanca
-
-import kotlin.collections.filter
 
 @Composable
 fun ColaboradorScreen(
     reportes: List<Reporte>,
+    colaboradorNombre: String = "Soporte UAM",
+    colaboradorUid: String = "",
     tomarReporte: (Int) -> Unit,
     resolverReporte: (Int) -> Unit,
     cerrarSesion: () -> Unit
 ) {
     var pestanaActual by remember { mutableStateOf("pendientes") }
 
-    val reportesPendientes = reportes.filter { it.estado == "Pendiente" }
-    val misTareas = reportes.filter { it.estado == "En proceso" }
+    val reportesPendientes = reportes
+        .filter { it.estado == "Pendiente" }
+        .sortedByDescending { it.id }
+
+    val misTareas = reportes
+        .filter { reporte ->
+            val esMiReporte = if (colaboradorUid.isNotBlank()) {
+                reporte.atendidoPorUid == colaboradorUid
+            } else {
+                reporte.estado == "En proceso" || reporte.estado == "Resuelto"
+            }
+
+            esMiReporte && (reporte.estado == "En proceso" || reporte.estado == "Resuelto")
+        }
+        .sortedByDescending { it.id }
 
     FondoPrincipal {
         Column(
@@ -58,7 +77,7 @@ fun ColaboradorScreen(
             )
 
             Text(
-                text = "Gestiona los reportes tecnológicos recibidos",
+                text = "Gestioná los reportes tecnológicos recibidos",
                 fontSize = 17.sp,
                 color = ColorGrisTexto
             )
@@ -78,7 +97,7 @@ fun ColaboradorScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "Colaborador: Jaajajja",
+                    text = "Colaborador: $colaboradorNombre",
                     fontSize = 17.sp,
                     color = ColorGrisTexto
                 )
@@ -87,6 +106,22 @@ fun ColaboradorScreen(
                     text = "Área: Dirección Tecnológica",
                     fontSize = 17.sp,
                     color = ColorGrisTexto
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "Pendientes disponibles: ${reportesPendientes.size}",
+                    fontSize = 16.sp,
+                    color = ColorPrincipal,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Text(
+                    text = "Mis tareas: ${misTareas.size}",
+                    fontSize = 16.sp,
+                    color = ColorPrincipal,
+                    fontWeight = FontWeight.Bold
                 )
             }
 
@@ -150,13 +185,21 @@ fun ColaboradorScreen(
                         )
                     } else {
                         misTareas.forEach { reporte ->
-                            TarjetaReporteColaborador(
-                                reporte = reporte,
-                                textoBoton = "Marcar como solucionado",
-                                onClickBoton = {
-                                    resolverReporte(reporte.id)
-                                }
-                            )
+                            if (reporte.estado == "En proceso") {
+                                TarjetaReporteColaborador(
+                                    reporte = reporte,
+                                    textoBoton = "Marcar como solucionado",
+                                    onClickBoton = {
+                                        resolverReporte(reporte.id)
+                                    }
+                                )
+                            } else {
+                                TarjetaReporteColaborador(
+                                    reporte = reporte,
+                                    textoBoton = null,
+                                    onClickBoton = null
+                                )
+                            }
 
                             Spacer(modifier = Modifier.height(16.dp))
                         }
@@ -219,8 +262,8 @@ fun BotonPestanaColaborador(
 @Composable
 fun TarjetaReporteColaborador(
     reporte: Reporte,
-    textoBoton: String,
-    onClickBoton: () -> Unit
+    textoBoton: String?,
+    onClickBoton: (() -> Unit)?
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -307,22 +350,40 @@ fun TarjetaReporteColaborador(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            Button(
-                onClick = onClickBoton,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(54.dp),
-                shape = RoundedCornerShape(18.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = ColorPrincipal,
-                    contentColor = Color.White
-                )
-            ) {
-                Text(
-                    text = textoBoton,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
-                )
+            if (textoBoton != null && onClickBoton != null) {
+                Button(
+                    onClick = onClickBoton,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(54.dp),
+                    shape = RoundedCornerShape(18.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = ColorPrincipal,
+                        contentColor = Color.White
+                    )
+                ) {
+                    Text(
+                        text = textoBoton,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            } else {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = ColorPrincipal.copy(alpha = 0.10f)
+                    )
+                ) {
+                    Text(
+                        text = "Reporte solucionado",
+                        modifier = Modifier.padding(16.dp),
+                        color = ColorPrincipal,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
+                }
             }
         }
     }
